@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import { FeedItem } from '../models/FeedItem';
 import { requireAuth } from '../../users/routes/auth.router';
 import * as AWS from '../../../../aws';
+import { reset } from 'continuation-local-storage';
 
 const router: Router = Router();
 
@@ -24,7 +25,27 @@ router.patch('/:id',
     requireAuth, 
     async (req: Request, res: Response) => {
         //@TODO try it yourself
-        res.send(500).send("not implemented")
+        const item = await FeedItem.findOne({where: {id : req.params.id}});
+        if(item) {
+            // update 
+            const caption = req.body.caption;
+
+            if(!req.params.id) {
+                return res.status(400).send('Id is required');
+            }
+
+            if(!caption) {
+                return res.status(400).send('Caption is required');
+            }
+
+            const updatedItem = await item.update({caption: caption}, 
+                {where: {id:req.params.id}});
+            
+            return res.status(201).send(updatedItem);
+        }
+
+        res.send(400).send("Item not found");
+        
 });
 
 
