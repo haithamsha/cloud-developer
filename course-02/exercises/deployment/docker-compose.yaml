@@ -1,0 +1,38 @@
+version: "3"
+services:
+  reverseproxy:
+      image: scheele/reverseproxy
+      ports:
+          - 8080:8080
+      restart: always
+      depends_on:
+        - backend-user
+        - backend-feed     
+  backend-user:
+    image: haitham/restapi-user
+    volumes:
+      - $HOME/.aws:/root/.aws
+    environment:
+      POSTGRESS_USERNAME_PROD: $POSTGRESS_USERNAME_PROD
+      POSTGRESS_PASSWORD_PROD: $POSTGRESS_PASSWORD_PROD
+      POSTGRESS_DATABASE_PROD: $POSTGRESS_DATABASE_PROD
+      POSTGRESS_HOST_PROD: $POSTGRESS_HOST_PROD
+      AWS_REGION: $AWS_REGION
+      AWS_PROFILE: $AWS_PROFILE
+      AWS_MEDIA_BUCKET: $AWS_MEDIA_BUCKET
+      JWT_SECRET: $JWT_SECRET
+      URL: "http://localhost:8100"
+  backend-feed:
+    image: haitham/restapi-feed
+    volumes:
+      - $HOME/.aws:/root/.aws
+    environment:
+      POSTGRESS_USERNAME_PROD: $POSTGRESS_USERNAME_PROD
+      POSTGRESS_PASSWORD_PROD: $POSTGRESS_PASSWORD_PROD
+      POSTGRESS_DATABASE_PROD: $POSTGRESS_DATABASE_PROD
+      POSTGRESS_HOST_PROD: $POSTGRESS_HOST_PROD
+      AWS_REGION: $AWS_REGION
+      AWS_PROFILE: $AWS_PROFILE
+      AWS_MEDIA_BUCKET: $AWS_MEDIA_BUCKET
+      JWT_SECRET: $JWT_SECRET
+      URL: "http://localhost:8100"
